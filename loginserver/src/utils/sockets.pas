@@ -2,7 +2,8 @@ unit sockets;
 
 interface
 
-uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, packetprocess, database;
+uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, packetprocess, database,
+EnviarKey;
 
 type
   TObjeto = class(TObject)
@@ -86,7 +87,7 @@ begin
     TextColor(10);
     Writeln('[SERVER_S] Cliente recebido com sucesso! key: '+inttostr(Lista[i].key));
     TextColor(7);
-    enviarkey(i);
+    PxKey(i);
 end;
 
 procedure TObjeto.OnDisconnect(Sender: TObject; Socket: TCustomWinSocket);
