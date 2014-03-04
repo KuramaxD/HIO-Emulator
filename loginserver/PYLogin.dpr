@@ -8,7 +8,8 @@ Organizado por:
 Felipe de Souza Camargo(Kurama)
 
 Sobre o funcionamento do código:
-É apenas o arquivo de projeto padrão do Delphi 7. Apenas um loop para não fechar o console, e iniciação do servidor pela procedure iniciar();
+É apenas o arquivo de projeto padrão do Delphi 7. Apenas um loop para não fechar o console, e iniciação do
+servidor pela procedure iniciar();
 
 Referências:
 http://rvelthuis.de/programs/console.html
