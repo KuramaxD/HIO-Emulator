@@ -1,5 +1,20 @@
 program PYLogin;
 
+(*
+
+Projeto principal de loginserver para PangYa.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+É apenas o arquivo de projeto padrão do Delphi 7, apenas um loop para não fechar o console, e iniciação do servidor pela procedure iniciar();
+
+Referências:
+http://rvelthuis.de/programs/console.html
+
+*)
+
 {$APPTYPE CONSOLE}
 
 {$R 'icon.res' 'icon.rc'}
