@@ -17,7 +17,7 @@ Sem referências no momento
 
 interface
 
-uses Windows, SysUtils, colors, funcoes, crypts, packetprocess, database, sockets;
+uses Windows, SysUtils, colors, funcoes, crypts, ChecarLogin, database, sockets;
 
 procedure iniciar();
 

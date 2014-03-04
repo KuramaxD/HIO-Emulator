@@ -27,9 +27,24 @@ uses
   colors in 'src\etc\colors.pas',
   funcoes in 'src\utils\funcoes.pas',
   crypts in 'src\utils\crypts.pas',
-  packetprocess in 'src\packets\packetprocess.pas',
+  ChecarLogin in 'src\packets\ChecarLogin.pas',
   database in 'src\utils\database.pas',
-  sockets in 'src\utils\sockets.pas';
+  sockets in 'src\utils\sockets.pas',
+  EnviarKey in 'src\packets\EnviarKey.pas',
+  UsuarioBanido in 'src\packets\UsuarioBanido.pas',
+  SenhaIncorreta in 'src\packets\SenhaIncorreta.pas',
+  PrimeiroLogin in 'src\packets\PrimeiroLogin.pas',
+  NickDisponivel in 'src\packets\NickDisponivel.pas',
+  NickIndisponivel in 'src\packets\NickIndisponivel.pas',
+  SalvarNick in 'src\packets\SalvarNick.pas',
+  ChecarNick in 'src\packets\ChecarNick.pas',
+  Codigo1 in 'src\packets\Codigo1.pas',
+  Codigo2 in 'src\packets\Codigo2.pas',
+  TerminarPrimeiroLogin in 'src\packets\TerminarPrimeiroLogin.pas',
+  CriarMacros in 'src\packets\CriarMacros.pas',
+  DadosPessoais in 'src\packets\DadosPessoais.pas',
+  Servidores in 'src\packets\Servidores.pas',
+  UsuarioLogado in 'src\packets\UsuarioLogado.pas';
 
 var
   Msg: TMsg;

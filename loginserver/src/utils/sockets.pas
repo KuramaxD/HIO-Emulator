@@ -1,9 +1,25 @@
 unit sockets;
 
+(*
+
+Unit que contém o gerenciamento dos sockets.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Serve para organizar cada cliente em uma matriz e usar
+os recursos de cada um, individualmente ou não.
+
+Referências:
+http://docwiki.embarcadero.com/RADStudio/XE5/en/Installing_Socket_Components
+
+*)
+
 interface
 
-uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, packetprocess, database,
-EnviarKey;
+uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, ChecarLogin, database,
+EnviarKey, SalvarNick, ChecarNick, Codigo2, TerminarPrimeiroLogin;
 
 type
   TObjeto = class(TObject)
@@ -24,6 +40,7 @@ TLista = record
   uid: integer;
   codigo1: ansistring;
   codigo2: ansistring;
+  data: AnsiString;
 end;
 
 var
@@ -83,9 +100,9 @@ begin
     Lista[i].status:=true;
     Lista[i].socket:=socket;
     randomize;
-    Lista[i].key:=random(15);
+    Lista[i].key:=Random(15)+1;
     TextColor(10);
-    Writeln('[SERVER_S] Cliente recebido com sucesso! key: '+inttostr(Lista[i].key));
+    Writeln('[SERVER_S] Cliente recebido com sucesso! key: '+inttostr(Lista[i].key-1)+' ('+inttostr(i)+')');
     TextColor(7);
     PxKey(i);
 end;
@@ -105,6 +122,9 @@ begin
           Query.SQL.Add('update py_members set loginstatus = 0 where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
           Query.ExecSQL;
           MySQL.Connected:=false;
+          TextColor(12);
+          Writeln('[SERVER_S] Cliente desconectado! ('+inttostr(i)+')');
+          TextColor(7);
         end;
         break;
       end;
@@ -112,41 +132,50 @@ end;
 
 procedure TObjeto.OnRead(Sender: TObject; Socket: TCustomWinSocket);
 var
-  i, packetid, x, y, nrand: integer;
-  data, datadec: ansistring;
+  i, packetid, x, y, nrand, size: integer;
+  datacortada, datadec: ansistring;
 begin
   for i:=0 to length(Lista)-1 do begin
     if Lista[i].status then
     if Lista[i].socket=socket then begin
-      data:=socket.receivetext;
-      if length(data)=returnsize(data[2]+data[3]) then begin
-        nrand:=ord(data[1]);
-        x:=byte(keys[(Lista[i].key shl 8)+nrand+1]);
-        y:=byte(keys[(Lista[i].key shl 8)+nrand+4097]);
-        if y=(x xor ord(data[5])) then begin
-          datadec:=decryptS(data,Lista[i].key);
-          packetid:=returnsize(datadec[6]+datadec[7])-4;
-          case packetid of
-            1: checarlogin(datadec,i);
-            3: codigo2(i);
-            6: salvarnick(datadec,i);
-            7: checarnick(datadec,i);
-            8: terminarprimeirologin(datadec,i);
-            11: ; //não é usado no oficial e não é necessário, porém é um aviso de desconexão de usuário
+      Lista[i].data:=Lista[i].data+socket.receivetext;
+      while true do begin
+        size:=0;
+        if length(Lista[i].data) > 0 then size:=returnsize(Lista[i].data[2]+Lista[i].data[3]);
+        if size=0 then Break;
+        if size<=Length(Lista[i].data) then begin
+          datacortada:=Copy(Lista[i].data,1,size);
+          if length(datacortada)=returnsize(datacortada[2]+datacortada[3]) then begin
+            nrand:=ord(datacortada[1]);
+            x:=byte(keys[((Lista[i].key-1) shl 8)+nrand+1]);
+            y:=byte(keys[((Lista[i].key-1) shl 8)+nrand+4097]);
+            if y=(x xor ord(datacortada[5])) then begin
+              datadec:=decryptS(datacortada,Lista[i].key);
+              packetid:=returnsize(datadec[6]+datadec[7])-4;
+              case packetid of
+                1: LxChecarLogin(datadec,i);
+                3: Px03(i);
+                6: Px01n(datadec,i);
+                7: LxChecarNick(datadec,i);
+                8: LxTerminarPrimeiroLogin(datadec,i);
+                11: ; //não é usado no oficial e não é necessário, porém é um aviso de desconexão de usuário
+              else begin
+                writeln('packet id: '+inttostr(packetid));
+                writeln(space(stringtohex(datadec)));
+              end;
+              end;
+              Delete(Lista[i].data,1,size);
+            end
+            else begin
+              Lista[i].socket.close;
+            end;
+          end
           else begin
-            writeln('packet id: '+inttostr(packetid));
-            writeln(space(stringtohex(datadec)));
-          end;
+            Lista[i].socket.close;
           end;
         end
-        else begin
-          Lista[i].socket.close;
-        end;
-      end
-      else begin
-        Lista[i].socket.close;
+        else break;
       end;
-      break;
     end;
   end;
 end;
@@ -164,6 +193,9 @@ begin
           Query.SQL.Clear;
           Query.SQL.Add('update py_members set loginstatus = 0 where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
           Query.ExecSQL;
+          TextColor(12);
+          Writeln('[SERVER_S] Cliente desconectado! ('+inttostr(i)+')');
+          TextColor(7);
         end;
         break;
       end;

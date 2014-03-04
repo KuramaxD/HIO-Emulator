@@ -31,7 +31,7 @@ procedure PxKey(i: integer);
 var
   pdata: ansistring;
 begin
-  pdata:=#$00#$0B#$00#$00#$00#$00+chr(Lista[i].key)+#$00#$00#$00#$0F#$27#$00#$00;
+  pdata:=#$00#$0B#$00#$00#$00#$00+chr(Lista[i].key-1)+#$00#$00#$00#$0F#$27#$00#$00;
   Lista[i].socket.sendtext(pdata);
 end;
 

@@ -599,6 +599,7 @@ var
   size: word;
   src: AnsiString;
 begin
+  key:=key-1;
   src:=data;
   size:=length(src)-3;
   sz:=size;
@@ -724,6 +725,7 @@ var
   size, factor: integer;
   src: AnsiString;
 begin
+  key:=key-1;
   src:=data;
   storedspace:=AllocMem(Length(src)*2);
   factor:=byte(keys[(key shl 8)+byte(src[1])+1]);
