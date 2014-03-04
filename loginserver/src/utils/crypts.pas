@@ -1,5 +1,21 @@
 unit crypts;
 
+(*
+
+Unit que contém todas as funções de criptografia do PangYa.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Serve para encriptar, desencriptar, comprimir e descomprimir os pacotes
+do PangYa.
+
+Referências:
+Sem referências no momento
+
+*)
+
 interface
 
 uses Windows, SysUtils, funcoes;
