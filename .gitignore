@@ -1,0 +1,8 @@
+*.~*
+*.dcu
+*.exe
+exe
+dcu
+db
+*.db
+
