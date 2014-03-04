@@ -1,5 +1,20 @@
 unit funcoes;
 
+(*
+
+Unit que contém funções básicas para tratamento de dados.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Sem muitas explicações.
+
+Referências:
+Sem referências no momento
+
+*)
+
 interface
 
 uses SysUtils, windows, forms;
@@ -135,9 +150,9 @@ var
 begin
   istart:=gettickcount;
   repeat
-	  istop := gettickcount;
-	  application.processmessages;
-	  sleep(1);
+	istop := gettickcount;
+	application.processmessages;
+	sleep(1);
   until (istop - istart) >= dwmilliseconds;
 end;
 
