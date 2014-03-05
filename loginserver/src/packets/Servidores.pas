@@ -39,7 +39,7 @@ begin
   Query.Open;
   while not Query.eof do begin
     qt:=qt+1;
-    pdata:=pdata+wrapper(Query.FieldByName('nome').AsString,40)+hextoascii(reversestring(IntToHex(Query.FieldByName('sid').AsInteger,8)))+#$40#$06#$00#$00#$F0#$00#$00#$00+wrapper(Query.FieldByName('ip').AsString,18)+hextoascii(reversestring(IntToHex(Query.FieldByName('porta').AsInteger,8)))+#$00#$00#$00#$00+hextoascii(reversestring(IntToHex(Query.FieldByName('usuariosonline').AsInteger,8)))+#$00#$00#$00#$00#$64#$00#$00#$00+chr(Query.FieldByName('icone').AsInteger)+#$00;
+    pdata:=pdata+wrapper(Query.FieldByName('nome').AsString,40)+hextoascii(reversestring(IntToHex(Query.FieldByName('sid').AsInteger,8)))+#$40#$06#$00#$00#$F0#$00#$00#$00+wrapper(Query.FieldByName('ip').AsString,18)+hextoascii(reversestring(IntToHex(Query.FieldByName('porta').AsInteger,8)))+#$00#$00#$00#$00+hextoascii(reversestring(IntToHex(Query.FieldByName('usuariosonline').AsInteger,8)))+chr(Query.FieldByName('icone_evento').AsInteger)+#$00#$00#$00#$64#$00#$00#$00+chr(Query.FieldByName('icone').AsInteger)+#$00;
     Query.Next;
   end;
   pdata:=EncryptS(Compress(#$02#$00+chr(qt)+pdata),Lista[i].key);
