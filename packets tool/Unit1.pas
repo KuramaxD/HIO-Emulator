@@ -235,7 +235,6 @@ try
         memo7.lines.add('#$'+(addchar(stringtohex(buffdec))))
       else
         memo7.lines.add(space(stringtohex(buffdec)));
-      Memo7.lines.add('sleep(100);');
       memo8.lines.add('packet id: '+inttostr(packetid));
       i:=1;
       while i <= length(buffdec) do begin
