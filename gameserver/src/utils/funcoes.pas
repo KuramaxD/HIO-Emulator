@@ -205,9 +205,9 @@ var
 begin
   istart:=gettickcount;
   repeat
-	  istop := gettickcount;
-	  application.processmessages;
-	  sleep(1);
+    istop := gettickcount;
+    application.processmessages;
+    sleep(1);
   until (istop - istart) >= dwmilliseconds;
 end;
 
