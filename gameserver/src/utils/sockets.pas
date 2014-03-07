@@ -18,7 +18,8 @@ http://docwiki.embarcadero.com/RADStudio/XE5/en/Installing_Socket_Components
 
 interface
 
-uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, packetprocess, database;
+uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, packetprocess, database, EnviarKey,
+Autenticacao, SelecionarCanal;
 
 type
   TObjeto = class(TObject)
@@ -112,7 +113,7 @@ begin
     TextColor(10);
     Writeln('[SERVER_S] Cliente recebido com sucesso! key: '+inttostr(Lista[i].key-1)+' ('+inttostr(i)+')');
     TextColor(7);
-    enviarkey(i);
+    PxKey(i);
     MySQL.Connected:=True;
     Query.Close;
     Query.SQL.Clear;
@@ -177,9 +178,9 @@ begin
               datadec:=decryptS(datacortada,Lista[i].key);
               packetid:=returnsize(datadec[6]+datadec[7])-4;
               case packetid of
-                2: autenticar(datadec,i);
+                2: LxAutenticar(datadec,i);
                 3: chat(datadec,i);
-                4: selecionarcanal(datadec,i);
+                4: LxEntrarCanal(datadec,i);
                 11: atualizarbarra(datadec,i);
                 32: atualizar(datadec,i);
                 42: pm(datadec,i);

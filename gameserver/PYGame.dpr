@@ -30,7 +30,10 @@ uses
   packetprocess in 'src\packets\packetprocess.pas',
   database in 'src\utils\database.pas',
   sockets in 'src\utils\sockets.pas',
-  iff in 'src\utils\iff.pas';
+  iff in 'src\utils\iff.pas',
+  EnviarKey in 'src\packets\EnviarKey.pas',
+  Autenticacao in 'src\packets\Autenticacao.pas',
+  SelecionarCanal in 'src\packets\SelecionarCanal.pas';
 
 var
   Msg: TMsg;
