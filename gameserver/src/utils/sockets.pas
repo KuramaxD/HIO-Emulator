@@ -19,7 +19,7 @@ http://docwiki.embarcadero.com/RADStudio/XE5/en/Installing_Socket_Components
 interface
 
 uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, packetprocess, database, EnviarKey,
-Autenticacao, SelecionarCanal;
+Autenticacao, SelecionarCanal, Calendario, KeepAlive, Ticker, Chat, Caddies;
 
 type
   TObjeto = class(TObject)
@@ -179,23 +179,23 @@ begin
               packetid:=returnsize(datadec[6]+datadec[7])-4;
               case packetid of
                 2: LxAutenticar(datadec,i);
-                3: chat(datadec,i);
+                3: chatn(datadec,i);
                 4: LxEntrarCanal(datadec,i);
                 11: atualizarbarra(datadec,i);
                 32: atualizar(datadec,i);
-                42: pm(datadec,i);
-                57: pagarcaddie(datadec,i);
+                42: LxPM(datadec,i);
+                57: LxRenovarCaddie(datadec,i);
                 129: entrarnolobby(i);
                 130: sairdolobby(i);
-                102: enviarticker(datadec,i);
-                103: liberarticker(i);
-                107: atualizarpayday(datadec,i);
+                102: LxEnviarTicker(datadec,i);
+                103: LxChecarTicker(i);
+                107: LxAvisodeExpiracao(datadec,i);
                 112: begin
                   Lista[i].socket.sendtext(EncryptS(Compress(#$D5#$00#$05#$00#$00#$00),Lista[i].key));
                   Lista[i].socket.sendtext(EncryptS(Compress(#$DD#$00#$00#$00#$00#$00#$01#$00#$00#$00#$00#$00#$00#$00#$0A#$00#$00#$18#$49#$12#$E3#$05#$02#$00#$00#$00#$01#$00#$00#$00),Lista[i].key));
                 end;
-                244: timestamp(i);
-                365: enviardiasonline2(i);
+                244: LxSalvarKeepAlive(i);
+                365: LxEnviarCalendario2(i);
                 366: x2(i);
 
                 //181: teste4(i);

@@ -4,7 +4,6 @@ interface
 
 uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, Classes, StrUtils, iff;
 
-procedure criarcanais(i: Integer);
 procedure enviarpersonagens(i: integer);
 procedure enviarinventorio(i: integer);
 procedure teste(i: integer);
@@ -12,159 +11,19 @@ procedure teste4(i: integer);
 procedure teste5(i: integer);
 procedure teste6(i: integer);
 procedure x2(i: integer);
-procedure enviardiasonline(i: integer);
-procedure enviardiasonline2(i: integer);
 procedure atualizarbarra(data: AnsiString; i: Integer);
-procedure timestamp(i: integer);
-procedure liberarticker(i: Integer);
-procedure enviarticker(data: ansistring; i: integer);
 procedure entrarnolobby(i: integer);
 procedure sairdolobby(i: integer);
-procedure chat(data: ansistring; i: Integer);
+procedure chatn(data: ansistring; i: Integer);
 function executarcomando(comando: AnsiString; i: integer): integer;
-procedure pm(data: ansistring; i: integer);
 procedure enviarmascotes(i: integer);
-procedure enviarcaddies(i: integer);
-procedure enviarpayday(i: Integer);
-procedure atualizarpayday(data: ansistring; i: integer);
-procedure pagarcaddie(data: ansistring;i: integer);
 procedure atualizar(data: ansistring; i: integer);
 procedure myroom(i: Integer);
 procedure mainpacket(i: integer);
 
 implementation
 
-uses main, sockets, database;
-
-procedure enviardiasonline(i: integer);
-var
-  pdata: ansistring;
-  diasmarcados, itemdehoje, quantidade, proxitem, proxquantidade: integer;
-begin
-  if dbug=1 then debug('Enviando calendario',i);
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  if 0=Query.FieldByName('calendario').AsInteger then begin
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-    Query.Open;
-    diasmarcados:=Query.FieldByName('diasmarcados').AsInteger;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_calendario where data = CURDATE()');
-    Query.Open;
-    itemdehoje:=Query.fieldbyname('item').asinteger;
-    quantidade:=Query.fieldbyname('quantidade').asinteger;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_itens where uid = '+QuotedStr(inttostr(Lista[i].uid))+' and itemid = '+QuotedStr(inttostr(itemdehoje))+'');
-    Query.Open;
-    if Query.Eof then begin
-      Query.Close;
-      Query.SQL.Clear;
-      Query.SQL.Add('insert into py_itens (uid, itemid, quantidade) values ('+QuotedStr(inttostr(Lista[i].uid))+','+QuotedStr(inttostr(itemdehoje))+','+QuotedStr(inttostr(quantidade))+')');
-      Query.ExecSQL;
-    end
-    else begin
-      Query.Close;
-      Query.SQL.Clear;
-      Query.SQL.Add('update py_itens set quantidade=quantidade+'+QuotedStr(inttostr(quantidade))+' where uid='+QuotedStr(inttostr(Lista[i].uid))+' and itemid='+QuotedStr(inttostr(itemdehoje))+'');
-      Query.ExecSQL;
-    end;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('update py_members set calendario=1 where uid='+QuotedStr(inttostr(Lista[i].uid))+'');
-    Query.ExecSQL;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('update py_members set diasmarcados=diasmarcados+1 where uid='+QuotedStr(inttostr(Lista[i].uid))+'');
-    Query.ExecSQL;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_calendario where data = CURDATE() + INTERVAL 1 DAY');
-    Query.Open;
-    proxitem:=Query.fieldbyname('item').AsInteger;
-    proxquantidade:=Query.fieldbyname('quantidade').AsInteger;
-    pdata:=encryptS(compress(#$48#$02#$00#$00#$00#$00#$01+hextoascii(reversestring2(IntToHex(itemdehoje,8)))+hextoascii(reversestring2(IntToHex(quantidade,8)))+hextoascii(reversestring2(IntToHex(proxitem,8)))+hextoascii(reversestring2(IntToHex(proxquantidade,8)))+hextoascii(reversestring2(IntToHex(diasmarcados,8)))),Lista[i].key);
-    Lista[i].socket.SendText(pdata);
-  end
-  else begin
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-    Query.Open;
-    diasmarcados:=Query.FieldByName('diasmarcados').AsInteger;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_calendario where data = CURDATE()');
-    Query.Open;
-    itemdehoje:=Query.fieldbyname('item').asinteger;
-    quantidade:=Query.fieldbyname('quantidade').asinteger;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_calendario where data = CURDATE() + INTERVAL 1 DAY');
-    Query.Open;
-    proxitem:=Query.fieldbyname('item').AsInteger;
-    proxquantidade:=Query.fieldbyname('quantidade').AsInteger;
-    pdata:=encryptS(compress(#$48#$02#$00#$00#$00#$00#$01+hextoascii(reversestring2(IntToHex(itemdehoje,8)))+hextoascii(reversestring2(IntToHex(quantidade,8)))+hextoascii(reversestring2(IntToHex(proxitem,8)))+hextoascii(reversestring2(IntToHex(proxquantidade,8)))+hextoascii(reversestring2(IntToHex(diasmarcados,8)))),Lista[i].key);
-    Lista[i].socket.SendText(pdata);
-  end;
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
-procedure enviardiasonline2(i: integer);
-var
-  pdata: ansistring;
-  diasmarcados, itemdehoje, quantidade, proxitem, proxquantidade: integer;
-begin
-  if dbug=1 then debug('Enviando calendario',i);
-  MySQL.Connected:=true;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  diasmarcados:=Query.FieldByName('diasmarcados').AsInteger;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_calendario where data = CURDATE()');
-  Query.Open;
-  itemdehoje:=Query.fieldbyname('item').asinteger;
-  quantidade:=Query.fieldbyname('quantidade').asinteger;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_calendario where data = CURDATE() + INTERVAL 1 DAY');
-  Query.Open;
-  proxitem:=Query.fieldbyname('item').AsInteger;
-  proxquantidade:=Query.fieldbyname('quantidade').AsInteger;
-  pdata:=EncryptS(Compress(#$47#$02#$00#$00#$00#$00#$01+hextoascii(reversestring2(IntToHex(itemdehoje,8)))+hextoascii(reversestring2(IntToHex(quantidade,8)))+hextoascii(reversestring2(IntToHex(proxitem,8)))+hextoascii(reversestring2(IntToHex(proxquantidade,8)))+hextoascii(reversestring2(IntToHex(diasmarcados,8)))),Lista[i].key);
-  Lista[i].socket.sendtext(pdata);
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
-procedure criarcanais(i: Integer);
-var
-  pdata: ansistring;
-  u, x, online: integer;
-begin
-  if dbug=1 then debug('Enviando canais',i);
-  online:=0;
-  for u:=0 to Length(main.canais)-1 do begin
-    for x:=0 to Length(Lista)-1 do begin
-      if Lista[x].status=true then begin
-        if Lista[x].canal=u then online:=online+1;
-      end;
-    end;
-    pdata:=pdata+wrapper(main.canais[u].nome,64)+hextoascii(reversestring2(inttohex(main.canais[i].maxusuarios,4)))+hextoascii(reversestring2(inttohex(online,4)))+chr(u)+#$00+chr(main.canais[i].tipo)+#$00#$00#$00#$00#$00#$00;
-  end;
-  pdata:=EncryptS(Compress(#$4D#$00+chr(Length(main.canais))+pdata),Lista[i].key);
-  Lista[i].socket.SendText(pdata);
-end;
+uses main, sockets, database, Calendario, Canais, Toolbar, Cookies, Caddies;
 
 procedure enviarpersonagens(i: integer);
 var
@@ -259,55 +118,6 @@ begin
   Lista[i].socket.SendText(pdata);
   Query.Close;
   MySQL.Connected:=false;
-end;
-
-procedure barradeselecao(i: integer);
-var
-  pdata: AnsiString;
-  u, cid, tacoid, bolaid, mascoteid, caddie: integer;
-  itens: array[1..10] of integer;
-begin
-  if dbug=1 then debug('Enviando barra de selecao',i);
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  tacoid:=Query.FieldByName('taco').AsInteger;
-  cid:=Query.FieldByName('personagemselecionado').AsInteger;
-  bolaid:=Query.FieldByName('bola').AsInteger;
-  mascoteid:=Query.fieldbyname('mascote').asinteger;
-  caddie:=Query.fieldbyname('caddie').asinteger;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_itens where idi = '+QuotedStr(inttostr(bolaid))+'');
-  Query.Open;
-  bolaid:=Query.FieldByName('itemid').AsInteger;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_mochila where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  itens[1]:=Query.fieldbyname('item1').asinteger;
-  itens[2]:=Query.fieldbyname('item2').asinteger;
-  itens[3]:=Query.fieldbyname('item3').asinteger;
-  itens[4]:=Query.fieldbyname('item4').asinteger;
-  itens[5]:=Query.fieldbyname('item5').asinteger;
-  itens[6]:=Query.fieldbyname('item6').asinteger;
-  itens[7]:=Query.fieldbyname('item7').asinteger;
-  itens[8]:=Query.fieldbyname('item8').asinteger;
-  itens[9]:=Query.fieldbyname('item9').asinteger;
-  itens[10]:=Query.fieldbyname('item10').asinteger;
-  for u:=1 to 10 do begin
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_itens where uid = '+QuotedStr(inttostr(Lista[i].uid))+' and idi = '+QuotedStr(inttostr(itens[u]))+'');
-    Query.Open;
-    itens[u]:=Query.fieldbyname('itemid').asinteger;
-  end;
-  pdata:=encryptS(compress(#$72#$00+hextoascii(reversestring2(IntToHex(caddie,8)))+hextoascii(reversestring2(IntToHex(cid,8)))+hextoascii(reversestring2(IntToHex(tacoid,8)))+hextoascii(reversestring2(IntToHex(bolaid,8)))+hextoascii(reversestring2(IntToHex(itens[1],8)))+hextoascii(reversestring2(IntToHex(itens[2],8)))+hextoascii(reversestring2(IntToHex(itens[3],8)))+hextoascii(reversestring2(IntToHex(itens[4],8)))+hextoascii(reversestring2(IntToHex(itens[5],8)))+hextoascii(reversestring2(IntToHex(itens[6],8)))+hextoascii(reversestring2(IntToHex(itens[7],8)))+hextoascii(reversestring2(IntToHex(itens[8],8)))+
-  hextoascii(reversestring2(IntToHex(itens[9],8)))+hextoascii(reversestring2(IntToHex(itens[10],8)))+#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00+hextoascii(reversestring2(IntToHex(mascoteid,8)))),Lista[i].key);
-  Lista[i].socket.sendtext(pdata);
-  Query.Close;
 end;
 
 procedure atualizarbarra(data: AnsiString; i: Integer);
@@ -432,90 +242,6 @@ begin
   end;
 end;
 
-procedure timestamp(i: integer);
-var
-  time: integer;
-begin
-  time:=GetTickCount;
-  if dbug=1 then debug('Timestamp '+inttostr(time),i);
-  Lista[i].timestamp:=time;
-end;
-
-procedure enviarcookies(i: integer);
-var
-  pdata: ansistring;
-begin
-  if dbug=1 then debug('Enviando cookies',i);
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  pdata:=EncryptS(Compress(#$96#$00+hextoascii(reversestring2(IntToHex(Query.fieldbyname('cookies').AsInteger,8)))+#$00#$00#$00#$00),Lista[i].key);
-  Lista[i].socket.sendtext(pdata);
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
-procedure liberarticker(i: Integer);
-var
-  pdata: ansistring;
-  cookies: integer;
-begin
-  if dbug=1 then debug('Liberando ticker',i);
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  cookies:=Query.fieldbyname('cookies').AsInteger;
-  if (cookies-300) < 0 then begin
-    pdata:=EncryptS(Compress(#$CB#$00#$00#$00#$00#$00#$00#$00),Lista[i].key);
-    Lista[i].socket.SendText(pdata);
-  end
-  else begin
-    pdata:=EncryptS(Compress(#$CA#$00#$00#$00#$00#$00#$00#$00),Lista[i].key);
-    Lista[i].socket.SendText(pdata);
-  end;
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
-procedure enviarticker(data: ansistring; i: integer);
-var
-  pdata, mensagem: ansistring;
-  cookies, u: integer;
-begin
-  if dbug=1 then debug('Enviando ticker',i);
-  mensagem:=Copy(data,10,byte(data[8]));
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  cookies:=Query.fieldbyname('cookies').AsInteger;
-  if (cookies-300) < 0 then begin
-    pdata:=EncryptS(Compress(#$CB#$00#$00#$00#$00#$00#$00#$00),Lista[i].key);
-    Lista[i].socket.SendText(pdata);
-  end
-  else begin
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('update py_members set cookies=cookies-300 where uid='+QuotedStr(inttostr(Lista[i].uid))+'');
-    Query.ExecSQL;
-    for u:=0 to length(Lista)-1 do begin
-      if Lista[u].status=True then
-        if Lista[u].canal=Lista[i].canal then begin
-          pdata:=EncryptS(Compress(#$C9#$00+chr(length(Lista[i].nick))+#$00+Lista[i].nick+chr(Length(mensagem))+#$00+mensagem),Lista[u].key);
-          Lista[u].socket.SendText(pdata);
-        end;
-    end;
-    enviarcookies(i);
-  end;
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
 procedure entrarnolobby(i: integer);
 var
   pdata: ansistring;
@@ -611,7 +337,7 @@ begin
   end;
 end;
 
-procedure chat(data: ansistring; i: Integer);
+procedure chatn(data: ansistring; i: Integer);
 var
   pdata, mensagem, nick: AnsiString;
   u: integer;
@@ -690,7 +416,7 @@ begin
         Query.SQL.Clear;
         Query.SQL.Add('update py_members set cookies='+QuotedStr(s.Strings[1])+' where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
         Query.ExecSQL;
-        enviarcookies(i);
+        Px150(i);
         result:=1;
       end;
       1: begin
@@ -714,38 +440,6 @@ begin
   MySQL.Connected:=false;
 end;
 
-procedure pm(data: ansistring; i: integer);
-var
-  pdata, mensagem, nick: ansistring;
-  u: integer;
-  enviado: Boolean;
-begin
-  if dbug=1 then debug('PM',i);
-  enviado:=false;
-  nick:=copy(data,10,byte(data[8]));
-  mensagem:=copy(data,12+byte(data[8]),byte(data[10+byte(data[8])]));
-  if (Lista[i].lobby=true) and (Lista[i].canal<>-1) then begin
-    for u:=0 to Length(Lista)-1 do begin
-      if Lista[u].status=true then
-        if Lista[u].canal<>-1 then
-          if Lista[u].nick=nick then begin
-            pdata:=EncryptS(Compress(#$84#$00#$00+chr(length(Lista[i].nick))+#$00+Lista[i].nick+chr(length(mensagem))+#$00+mensagem),Lista[u].key);
-            Lista[u].socket.SendText(pdata);
-            pdata:=EncryptS(Compress(#$84#$00#$00+chr(length(Lista[u].nick))+#$00+Lista[u].nick+chr(length(mensagem))+#$00+mensagem),Lista[i].key);
-            Lista[i].socket.SendText(pdata);
-            enviado:=true;
-            break;
-          end;
-    end;
-    if enviado=false then begin
-      pdata:=EncryptS(Compress(#$40#$00#$05+chr(length(nick))+#$00+nick+#$00#$00),Lista[i].key);
-      Lista[i].socket.SendText(pdata);
-    end;
-  end
-  else
-    Lista[i].socket.close;
-end;
-
 procedure enviarmascotes(i: integer);
 var
   pdata: ansistring;
@@ -765,123 +459,6 @@ begin
   end;
   pdata:=EncryptS(Compress(#$E1#$00+chr(quantidade)+pdata),Lista[i].key);
   Lista[i].socket.SendText(pdata);
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
-procedure enviarcaddies(i: integer);
-var
-  pdata: ansistring;
-  quantidade, u, tempo: integer;
-begin
-  if dbug=1 then debug('Enviando caddies',i);
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_caddies where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  quantidade:=0;
-  while not Query.eof do begin
-    tempo:=1;
-    for u:=0 to length(Caddies)-1 do begin
-      if Caddies[u].id=Query.fieldbyname('caddieid').asinteger then
-        if Caddies[u].preco > 0 then begin
-          tempo:=2;
-          break;
-        end;
-    end;
-    quantidade:=quantidade+1;
-    pdata:=pdata+hextoascii(reversestring2(IntToHex(Query.fieldbyname('cid').asinteger,8)))+hextoascii(reversestring2(IntToHex(Query.fieldbyname('caddieid').asinteger,8)))+hextoascii(reversestring2(IntToHex(Query.fieldbyname('skin').asinteger,8)))+chr(Query.fieldbyname('level').asinteger-1)+hextoascii(reversestring2(IntToHex(Query.fieldbyname('exp').asinteger,8)))+chr(tempo)+chr(Query.fieldbyname('dias').asinteger)+#$00+chr(Query.fieldbyname('tempo').asinteger)+#$00#$00+chr(Query.fieldbyname('payday').asinteger)+#$00;
-    Query.next;
-  end;
-  pdata:=EncryptS(Compress(#$71#$00+chr(quantidade)+#$00+chr(quantidade)+#$00+pdata),Lista[i].key);
-  Lista[i].socket.SendText(pdata);
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
-procedure enviarpayday(i: Integer);
-var
-  pdata: ansistring;
-  quantidade: integer;
-begin
-  if dbug=1 then debug('Enviando payday',i);
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_caddies where uid = '+QuotedStr(inttostr(Lista[i].uid))+' and payday = 1 and dias = 0');
-  Query.Open;
-  quantidade:=0;
-  while not Query.eof do begin
-    quantidade:=quantidade+1;
-    pdata:=pdata+hextoascii(reversestring2(IntToHex(Query.fieldbyname('cid').asinteger,8)))+hextoascii(reversestring2(IntToHex(Query.fieldbyname('caddieid').asinteger,8)))+#$00#$00#$00#$00#$03#$2D#$0A#$00#$00#$02#$00#$00#$00#$00#$00#$01#$00;
-    Query.next;
-  end;
-  pdata:=EncryptS(Compress(#$D4#$00+chr(quantidade)+#$00#$00#$00+pdata),Lista[i].key);
-  Lista[i].socket.SendText(pdata);
-  Query.Close;
-  MySQL.Connected:=false;
-end;
-
-procedure atualizarpayday(data: ansistring; i: integer);
-var
-  caddie, payday: integer;
-begin
-  if dbug=1 then debug('Atualizando payday',i);
-  caddie:=returnsize(Copy(data,8,4))-4;
-  payday:=byte(data[12]);
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('update py_caddies set payday='+QuotedStr(inttostr(payday))+' where uid = '+QuotedStr(inttostr(Lista[i].uid))+' and cid = '+QuotedStr(inttostr(caddie))+'');
-  Query.ExecSQL;
-  MySQL.Connected:=false;
-end;
-
-procedure pagarcaddie(data: ansistring; i: integer);
-var
-  caddie, caddieid, valor, u, pangs: integer;
-  pdata: ansistring;
-begin
-  if dbug=1 then debug('Pagar caddie',i);
-  caddieid:=returnsize(Copy(data,8,4))-4;
-  valor:=0;
-  MySQL.Connected:=True;
-  Query.Close;
-  Query.SQL.Clear;
-  Query.SQL.Add('select * from py_caddies where cid = '+QuotedStr(inttostr(caddieid))+' and uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-  Query.Open;
-  caddie:=Query.fieldbyname('caddieid').asinteger;
-  if not Query.Eof then begin
-    for u:=0 to length(Caddies)-1 do begin
-      if Caddies[u].id=caddie then begin
-        valor:=Caddies[u].preco;
-        Break;
-      end;
-    end;
-    Query.Close;
-    Query.SQL.Clear;
-    Query.SQL.Add('select * from py_members where uid = '+QuotedStr(inttostr(Lista[i].uid))+'');
-    Query.Open;
-    pangs:=Query.fieldbyname('pangs').AsInteger;
-    if (pangs-valor) < 0 then begin
-      pdata:=EncryptS(Compress(#$93#$00#$04),Lista[i].key);
-      Lista[i].socket.SendText(pdata);
-    end
-    else begin
-      pdata:=EncryptS(Compress(#$93#$00#$02+hextoascii(reversestring2(IntToHex(caddieid,8)))+hextoascii(reversestring2(IntToHex((pangs-valor),8)))+#$00#$00#$00),Lista[i].key);
-      Lista[i].socket.SendText(pdata);
-      Query.Close;
-      Query.SQL.Clear;
-      Query.SQL.Add('update py_members set pangs = pangs-'+QuotedStr(inttostr(valor))+' where uid='+QuotedStr(inttostr(Lista[i].uid))+'');
-      Query.ExecSQL;
-      Query.Close;
-      Query.SQL.Clear;
-      Query.SQL.Add('update py_caddies set dias = dias+30 where cid='+QuotedStr(inttostr(caddieid))+' and uid='+QuotedStr(inttostr(Lista[i].uid))+'');
-      Query.ExecSQL;
-    end;
-  end
-  else Lista[i].socket.close;
   Query.Close;
   MySQL.Connected:=false;
 end;
@@ -1220,15 +797,14 @@ mainpacket(i);
 
 enviarpersonagens(i);
 
-enviarcaddies(i);
+  LxEnviarCaddies(i);
 
 enviarinventorio(i);
 
 enviarmascotes(i);
 
-barradeselecao(i);
-
-criarcanais(i);
+  LxEnviarToolbar(i);
+  LxListadeCanais(i);
 
 Lista[i].socket.sendtext(EncryptS(Compress(#$31#$01#$01#$15#$00#$00#$00#$00#$00#$01#$00#$00#$00#$00#$02#$00#$00#$00#$00#$03#$00#$00#$00#$00#$04#$00#$00#$00+
 #$00#$05#$00#$00#$00#$00#$06#$00#$00#$00#$00#$07#$00#$00#$00#$00#$08#$00#$00#$00#$00#$09#$00#$00#$00#$00#$0A#$00+
@@ -2224,7 +1800,7 @@ Lista[i].socket.sendtext(EncryptS(Compress(#$36#$01),Lista[i].key));
 
 Lista[i].socket.sendtext(EncryptS(Compress(#$81#$01#$00#$00#$00#$00#$00),Lista[i].key));
 
-  enviarcookies(i);
+  Px150(i);
 
 Lista[i].socket.sendtext(EncryptS(Compress(#$69#$01#$05#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00+
 #$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00+
@@ -2324,7 +1900,7 @@ Lista[i].socket.sendtext(EncryptS(Compress(#$FC#$00#$01#$4D#$53#$4E#$5F#$31#$00#
 #$31#$36#$2E#$34#$2E#$32#$30#$35#$2E#$31#$36#$32#$00#$D1#$02#$04#$00#$D0#$1E#$00#$00#$00#$10#$00#$00#$00#$00#$00+
 #$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00),Lista[i].key));
 
-  enviarpayday(i);
+  LxEnviarAvisodeExpiracao(i);
 end;
 
 procedure x2(i: integer);
@@ -2340,7 +1916,7 @@ Lista[i].socket.SendText(encryptS(compress(#$0E#$01#$00#$00#$00#$00#$6B#$75#$72#
 #$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00#$00+
 #$00#$00#$00#$00#$00#$00#$00#$00#$00#$00),Lista[i].key));
 
-enviardiasonline(i);
+  LxEnviarCalendario1(i);
 end;
 
 procedure teste4(i: integer);

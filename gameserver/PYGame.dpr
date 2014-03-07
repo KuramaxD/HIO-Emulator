@@ -33,7 +33,15 @@ uses
   iff in 'src\utils\iff.pas',
   EnviarKey in 'src\packets\EnviarKey.pas',
   Autenticacao in 'src\packets\Autenticacao.pas',
-  SelecionarCanal in 'src\packets\SelecionarCanal.pas';
+  SelecionarCanal in 'src\packets\SelecionarCanal.pas',
+  Calendario in 'src\packets\Calendario.pas',
+  Canais in 'src\packets\Canais.pas',
+  Toolbar in 'src\packets\Toolbar.pas',
+  KeepAlive in 'src\packets\KeepAlive.pas',
+  Cookies in 'src\packets\Cookies.pas',
+  Ticker in 'src\packets\Ticker.pas',
+  Chat in 'src\packets\Chat.pas',
+  Caddies in 'src\packets\Caddies.pas';
 
 var
   Msg: TMsg;
