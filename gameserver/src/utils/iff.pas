@@ -1,5 +1,20 @@
 unit iff;
 
+(*
+
+Unit que carrega os arquivos de dados do PangYa.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Sem muitas explicações.
+
+Referências:
+Sem referências no momento
+
+*)
+
 interface
 
 uses Windows, SysUtils, colors, funcoes, Classes, StrUtils;

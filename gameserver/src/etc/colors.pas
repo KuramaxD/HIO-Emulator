@@ -1,5 +1,21 @@
 unit colors;
 
+(*
+
+Unit que contém funções sobre aplicações no modo Console em PASCAL.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Basta chamar as funções ou procedures que desejar, o servidor apenas
+usa a função textcolor: byte;
+
+Referências:
+http://rvelthuis.de/programs/console.html
+
+*)
+
 {$IFDEF CONDITIONALEXPRESSIONS}
   {$IF CompilerVersion >= 17.0}
     {$DEFINE INLINES}

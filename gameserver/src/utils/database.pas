@@ -1,5 +1,22 @@
 unit database;
 
+(*
+
+Unit que cuida da conexão ao MySQL.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Basta chamar a função iniciardatabase com os dados do MySQL e caso
+o valor retornado for True, quer dizer que a conexão foi feita com
+sucesso.
+
+Referências:
+http://zeoslib.sourceforge.net/portal.php
+
+*)
+
 interface
 
 uses Windows, SysUtils, ZConnection, ZDataset;

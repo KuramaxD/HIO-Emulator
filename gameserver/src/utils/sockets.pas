@@ -1,5 +1,21 @@
 unit sockets;
 
+(*
+
+Unit que contém o gerenciamento dos sockets.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Serve para organizar cada cliente em uma matriz e usar
+os recursos de cada um, individualmente ou não.
+
+Referências:
+http://docwiki.embarcadero.com/RADStudio/XE5/en/Installing_Socket_Components
+
+*)
+
 interface
 
 uses Windows, SysUtils, ScktComp, colors, funcoes, crypts, packetprocess, database;

@@ -1,5 +1,20 @@
 unit main;
 
+(*
+
+Unit que contém funções principais para ligar o servidor.
+
+Organizado por:
+Felipe de Souza Camargo(Kurama)
+
+Sobre o funcionamento do código:
+Apenas chame a função iniciar(); Ao abrir o programa.
+
+Referências:
+Sem referências no momento
+
+*)
+
 interface
 
 uses Windows, SysUtils, colors, funcoes, crypts, packetprocess, database, sockets, dialogs, iff;
@@ -35,18 +50,10 @@ end;
 
 procedure iniciar();
 begin
-  //======================================
-  //  PREPARA O SERVIDOR PARA SER LIGADO
-  //======================================
-  SetConsoleTitle('PY Game GB.R6.727.00');
+  SetConsoleTitle('HIO-Emulator Game Server');
   Writeln('[SERVER_S] Iniciando servidor.');
   carregarcanais(1);
-  //Le iffs
   loadiffs;
-  // Preparar canais
-  //======================================
-  //  ARRUMA AS PROCEDURES DO COMPONENTE
-  //======================================
   iniciardatabase('127.0.0.1','root','vertrigo','pangya',3306);
   iniciarsocket(7997);
   onopen;
